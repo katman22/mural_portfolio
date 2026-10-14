@@ -1,0 +1,30 @@
+This checkpoint is superseded by foundation_validation.txt.
+
+Mural portfolio foundation: progress checkpoint
+
+Application: /Users/kameronwere/Dev/mural_portfolio
+Existing repository, origin and main branch preserved. No commit or push.
+
+Implemented: Rails 8.1.4 / Ruby 3.3.12 foundation; PostgreSQL adapter;
+Mural and MuralPhoto models and database constraints; stable unique slugs;
+Active Storage tables, Disk services and object-storage placeholders;
+artist-specific public placeholder and HTTP Basic admin foundation;
+Importmap, Turbo, Stimulus, project instructions and focused tests.
+No complete gallery or admin CRUD has been built.
+
+Recorded validation: 27 tests / 83 assertions passed; Zeitwerk passed;
+RuboCop passed; Brakeman reported zero warnings; public root boot returned 200;
+development and test migrations ran against local PostgreSQL 18.6 on port 5433.
+Asset precompilation succeeded but reported missing native libvips.
+
+Remaining: complete native libvips installation and real variant-processing
+validation; repeat affected checks; stage new application files and prepare final implementation report.
+Files currently remain untracked. No production infrastructure was changed.
+
+Confirmed production database architecture:
+Reuse the existing PostgreSQL 18 service in the pumanawa_kam Render project.
+Use a separate logical mural database and its own DATABASE_URL.
+Mural schemas, tables and migrations remain independent of pumanawa_kam.
+No shared tables or cross-application foreign keys.
+Capacity and connection limits are sufficient per the project owner.
+No production PostgreSQL upgrade or service provisioning is part of this task.

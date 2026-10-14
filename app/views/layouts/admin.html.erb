@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Portfolio administration</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body>
+    <header>
+      <%= link_to "View portfolio", root_path %>
+      <%= button_to "Sign out", admin_logout_path, method: :delete %>
+    </header>
+    <main><%= yield %></main>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+Authentication note: superseded by the approved persistent User implementation.
+See admin_splash_implementation.txt for the current login architecture.
+
+Foundation image validation completed — 2026-10-13
+
+Versions: Rails 8.1.4, Ruby 3.3.12, local PostgreSQL 18.6, libvips 8.18.7.
+
+Native installation:
+JPEG/PNG/WebP-enabled libvips installed at /usr/local/opt/mural-libvips-8.18.7.
+/usr/local/lib/libvips.dylib and libvips.42.dylib link to this installation.
+Normal ruby-vips loading succeeds without DYLD_LIBRARY_PATH overrides.
+Dependencies include Homebrew glib, libpng, jpeg-turbo and webp.
+This local installation is not part of the Git commit or production provisioning.
+
+Deployment configuration:
+Docker configuration and entrypoint removed at the project owner's request.
+No container validation is required. Render native Ruby deployment is intended.
+Ensure native libvips is available in the eventual production runtime.
+
+Image regression coverage:
+Synthetic RGB landscape PNG, 2000x1250 pixels, generated locally (~781 KiB).
+No real artwork or external image license is involved.
+Real Active Storage attachment, processing, and download calls are exercised.
+Thumbnail crop: 240x180. Hero resize-to-limit: 1600x1000, preserving aspect ratio.
+Original bytes remain unchanged; processed variants can be downloaded repeatedly.
+Both variants are requested through the Active Storage representation route and
+its redirect to Disk delivery, return HTTP 200/image/png and decode correctly.
+No parser/processor/storage-service stubs.
+
+Validation results:
+Focused image tests: 9 runs, 38 assertions, zero failures/errors/skips.
+Full suite: 29 runs, 96 assertions, zero failures/errors/skips.
+Zeitwerk: All is good; no loading warnings.
+RuboCop: 36 files, no offenses.
+Brakeman 8.1.0: zero errors/security warnings.
+Production-mode asset precompile with dummy secret: exit 0, no libvips warning.
+
+Application files changed for this validation:
+README.md
+test/fixtures/files/mural.png
+test/models/mural_photo_test.rb
+test/integration/mural_image_delivery_test.rb (new)
+research/foundation_validation.txt (new)
+research/foundation_progress.txt (checkpoint updated)
+
+Deployment assumptions:
+Reuse existing Render PostgreSQL 18 service, independent mural logical database
+and DATABASE_URL, independent migrations; no pumanawa tables/cross-app FKs.
+Supply independent SECRET_KEY_BASE, admin credentials and object-storage settings.
+Production artwork originals belong in durable object storage, not web disk.
+Durable production Active Storage analysis/purge job handling is deferred and
+must be decided before live uploads. Private draft image delivery is deferred.
+The local codec build covers JPEG/PNG/WebP; no PDF/video handling is included.
+Production native libvips must be confirmed before live image processing.
+No production resources, credentials, database service or buckets were changed.
+
+Proposed first commit:
+Standard Rails foundation, locked gems/tool versions, Mural/MuralPhoto models,
+three migrations (domain and Active Storage), schema, public/admin placeholders,
+Basic Auth foundation, ordinary Hotwire assets, local/storage placeholders,
+PostgreSQL 18 CI, AGENTS/README/environment example/research reports,
+focused model/controller/image delivery tests and synthetic fixture.
+Excluded: credentials/master.key, real environment files, vendor bundle, native
+binaries, uploaded images, logs, temporary files and precompiled assets.
+No gallery UI, selection interaction or full admin CRUD; no Redis or React.
+Files staged for review only. No commit or push.
+
+Follow-up: removed Dockerfile, .dockerignore and bin/docker-entrypoint.
+GitHub Actions retains its PostgreSQL 18 test service; this does not deploy
+or containerize the Rails application. Local image validation remains unchanged.

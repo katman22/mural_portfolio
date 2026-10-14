@@ -1,0 +1,108 @@
+Whare Pūmanawa admin splash and persistent authentication
+
+Completed scope:
+Replaced HTTP Basic with PostgreSQL User and Rails encrypted CookieStore sessions.
+No second authentication system remains. No mural gallery or admin CRUD.
+
+Routes:
+GET /admin/login -> Admin::SessionsController#new
+POST /admin/login -> #create
+DELETE /admin/logout -> #destroy
+GET /admin -> Admin::DashboardController#index, gated by Admin::BaseController
+
+User:
+username normalized with strip/downcase, required, unique validation and DB index;
+password_digest required; bcrypt 3.1.22 via has_secure_password reset_token: false;
+active NOT NULL/default true; timestamps. DB checks reject empty/unnormalized
+username and empty password digest. Password minimum 12 characters, native bcrypt
+maximum 72 bytes. No signup, reset tokens, recovery, roles, remember-me or profile UI.
+
+Authentication:
+Rails authenticate_by performs dummy password hashing for unknown usernames.
+Unknown username, wrong password and inactive user get identical generic error.
+Successful login resets session before assigning user_id and redirects to /admin.
+Logout resets session. Each protected request checks user exists and is active.
+Normal CookieStore with unique key; HttpOnly, SameSite=Lax, Secure in production.
+Cookie holds user ID, not password. Rails CSRF checks retained. Auth pages no-store;
+login layout excludes Turbo/JS and form works through ordinary HTML POST.
+Native per-IP rate limit: 10 attempts / 3 minutes using 1 MB process-local memory.
+Not shared across workers and reset on restart; no Redis/new infrastructure.
+
+Bootstrap:
+README documents production Rails console using STDIN.getpass and trailing nil
+to suppress console echo. No hard-coded/default passwords, seed credentials,
+production user or real development user was created by implementation.
+Run migrations and console only against the mural application's own DATABASE_URL.
+Do not type real passwords as command literals or commit them.
+
+Design:
+Warm off-white, charcoal, deep red; system typography and editorial whitespace.
+Large artwork alongside form above 760px; vertically stacked below that breakpoint.
+Seven supplied static assets in explicit ARTWORK pool; one selected each render.
+No Mural association, image processing, rotation, timers, carousel or selection JS.
+object-fit: contain preserves both aspect ratios, with neutral letterboxing.
+Mobile artwork is bounded to 180–300px; controls at least 48px tall.
+Real labels, autocomplete, password input, focus outline, error alert/descriptions.
+Decorative artwork/mark have empty alt; small replaceable red/black SVG curve.
+No animations or external fonts. Footer uses approved Māori welcome text.
+
+Exact changed/created files for this task:
+.env.example
+Gemfile
+Gemfile.lock
+README.md
+app/models/user.rb
+app/controllers/admin/base_controller.rb
+app/controllers/admin/sessions_controller.rb
+app/views/layouts/admin.html.erb
+app/views/layouts/admin_login.html.erb
+app/views/admin/sessions/new.html.erb
+app/assets/stylesheets/admin_login.css
+app/assets/images/koru_mark.svg
+app/assets/images/admin_splash/IMG_6245-Edit.jpg
+app/assets/images/admin_splash/IMG_6377.JPG
+app/assets/images/admin_splash/IMG_6390.JPG
+app/assets/images/admin_splash/IMG_6395.JPG
+app/assets/images/admin_splash/IMG_6417.JPG
+app/assets/images/admin_splash/IMG_6429.JPG
+app/assets/images/admin_splash/IMG_6435.JPG
+config/routes.rb
+config/initializers/session_store.rb
+db/migrate/20261014000001_create_users.rb
+db/schema.rb
+test/models/user_test.rb
+test/controllers/admin/dashboard_controller_test.rb
+test/controllers/admin/sessions_controller_test.rb
+test/system/admin_login_test.rb
+research/admin_splash_implementation.txt
+research/admin_splash_authentication_review.txt (superseded notice)
+research/foundation_validation.txt (authentication superseded notice)
+
+Validation:
+Local development/test migration successful on PostgreSQL 18.
+Focused user/admin tests: 11 runs, 94 assertions; zero failures/errors/skips.
+Full suite: 36 runs, 179 assertions; zero failures/errors/skips.
+Chrome system tests: 2 runs, 20 assertions; zero failures/errors/skips.
+Chrome checked desktop, 820px tablet, exact 390px mobile, all seven image assets,
+synthetic portrait layout, no horizontal overflow and visible mobile submit button.
+End-to-end sign-in/sign-out works; image unchanged while filling form.
+CSRF-required login/logout and successful-login session rotation tested.
+Deactivation/deletion revoke subsequent protected access; HTTP Basic rejected.
+Zeitwerk: All is good, no warnings.
+RuboCop: 43 files, no offenses.
+Brakeman 8.1.0: zero errors/security warnings.
+Production-mode asset precompile with dummy secret: passed, all splash assets built.
+Desktop/mobile screenshots reviewed; generated screenshots remain ignored in tmp.
+
+Limitations/deferred:
+Koru motif and copy are replaceable design placeholders.
+Supplied originals retained (~63 MB total); optimized delivery can be reviewed later.
+All active users currently have the same admin access; roles deliberately absent.
+Password changes do not revoke other browser cookies; logout clears current browser.
+No account management/recovery/UI is provided. No gallery or mural CRUD.
+No production migration, bootstrap user, infrastructure or credentials changed.
+Existing Render PostgreSQL 18 service reused only at future deployment, with
+independent mural database/schema/URL and no cross-application table references.
+Production HTTPS, independent stable SECRET_KEY_BASE, native libvips and object
+storage settings remain deployment requirements. No Docker configuration added.
+Files staged for review; nothing committed or pushed.

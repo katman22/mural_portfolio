@@ -1,0 +1,15 @@
+Admin splash mark placement
+
+Moved the existing whare_pumanawa_mark.png inside the footer signature,
+below Whare Pūmanawa and Kia ora · Nau mai · Piki mai.
+Footer and mark align to the right on desktop and mobile.
+Mark retains 160px width with automatic height to preserve its proportions.
+Decorative alt/ARIA treatment retained; no asset edits or authentication changes.
+
+Files: app/views/admin/sessions/new.html.erb,
+app/assets/stylesheets/admin_login.css,
+research/admin_splash_mark_position.txt.
+No commit or push.
+
+Follow-up: horizontally mirrored the displayed mark using CSS scaleX(-1).
+Original image asset and right-aligned placement remain unchanged.

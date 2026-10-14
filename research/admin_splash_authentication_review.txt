@@ -1,0 +1,67 @@
+Authentication note: superseded by the approved persistent User implementation.
+See admin_splash_implementation.txt for the current login architecture.
+
+Whare Pūmanawa admin splash: authentication decision required
+
+No application implementation or authentication changes have been made.
+
+Current authentication:
+GET /admin -> Admin::DashboardController#index -> Admin::BaseController.
+Credentials come exclusively from ADMIN_USER and ADMIN_PASSWORD.
+Both values use secure comparison; missing configuration returns 503.
+Missing/incorrect HTTP Basic credentials return 401 with WWW-Authenticate.
+No User model, account records or authentication session tables exist.
+Passwords already match the Rails parameter filter.
+
+Tradeoff:
+An ordinary HTML form submits a request body; HTTP Basic expects Authorization
+headers on protected requests. A successful form POST does not establish the
+browser's Basic authentication state for later navigation. Rails has no standard
+form-to-browser-Basic bridge. JavaScript/manual header management or credentials
+in URLs would conflict with the approved scope and progressive enhancement.
+Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Authentication
+
+Option 1 — preserve HTTP Basic exactly:
+Public GET /admin/login artistic splash with an Enter administration action.
+Action links to existing /admin; browser-native credential prompt remains.
+No HTML username/password fields pretending to establish a login.
+
+Option 2 — intentional HTML form (requires explicit architecture approval):
+GET /admin/login renders form; POST /admin/login checks environment credentials;
+DELETE /admin/logout clears an expiring authenticated cookie.
+Use Rails encrypted/signed cookie containing only an authorization marker,
+expiry and credential-version binding, never the submitted password.
+Require CSRF protection, HttpOnly, SameSite, Secure in production, secure
+credential comparison, cache prevention and appropriate login attempt limiting.
+Retain HTTP Basic as an alternative if requested.
+No users/accounts/session table or authentication gem. However the cookie is
+client-held authentication state and changes the current Basic-only architecture.
+Do not implement this without approval.
+
+Proposed visual files (after authentication decision):
+config/routes.rb
+app/controllers/admin/entry_controller.rb (public entry, outside protected base)
+app/views/admin/entry/show.html.erb
+app/views/layouts/admin_entry.html.erb
+app/assets/stylesheets/admin_entry.css
+app/assets/images/admin_splash/ (seven supplied local assets)
+app/assets/images/koru_mark.svg (small replaceable decorative curve)
+test/controllers/admin/entry_controller_test.rb
+test/controllers/admin/dashboard_controller_test.rb
+README.md
+research/admin_splash_implementation.txt
+Cookie option additionally changes Admin::BaseController and adds POST/DELETE
+actions with focused auth/CSRF/expiry tests; exact names pending approval.
+
+Design:
+Whare Pūmanawa branding, off-white/charcoal/deep red, system fonts, restrained
+decorative maker mark. Large artwork beside small entry area on desktop; stack
+with bounded artwork height and usable controls on mobile. Use contain-style
+presentation to protect artwork composition, test portrait/landscape dimensions.
+Choose one explicitly curated asset once per server render; no timer, carousel,
+JavaScript rotation, Mural lookup or image processing. It stays fixed for that page.
+Seven images found: six 6000x4000 landscapes; one 2970x2981 nearly square.
+No genuinely portrait source is present; verify portrait layout with a test image
+or browser dimension fixture, without inventing another approved pool asset.
+
+No gallery, admin CRUD, production changes, commit or push.

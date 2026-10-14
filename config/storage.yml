@@ -1,0 +1,18 @@
+test:
+  service: Disk
+  root: <%= Rails.root.join("tmp/storage") %>
+
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
+
+# Placeholder only: supply an artist-owned S3-compatible bucket and credentials
+# before deploying. Nothing here creates a bucket or provisions infrastructure.
+object_storage:
+  service: S3
+  access_key_id: <%= ENV["OBJECT_STORAGE_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["OBJECT_STORAGE_SECRET_ACCESS_KEY"] %>
+  region: <%= ENV.fetch("OBJECT_STORAGE_REGION", "us-east-1") %>
+  bucket: <%= ENV["OBJECT_STORAGE_BUCKET"] %>
+  endpoint: <%= ENV["OBJECT_STORAGE_ENDPOINT"] %>
+  force_path_style: true

@@ -1,0 +1,23 @@
+# PostgreSQL 18 baseline. One application database per environment.
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+
+development:
+  <<: *default
+  database: mural_portfolio_development
+  host: <%= ENV.fetch("PGHOST", "localhost") %>
+  port: <%= ENV.fetch("PGPORT", 5433) %>
+
+test:
+  <<: *default
+  database: mural_portfolio_test
+  host: <%= ENV.fetch("PGHOST", "localhost") %>
+  port: <%= ENV.fetch("PGPORT", 5433) %>
+
+# Independent mural database on the existing Render PostgreSQL 18 service.
+# DATABASE_URL must not target the pumanawa_kam application database/schema.
+production:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
